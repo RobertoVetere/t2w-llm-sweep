@@ -1,0 +1,56 @@
+name: llm-sweep
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/sweep.yml"
+      - "prompt_bearing.txt"
+      - "run_llm.py"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: qwen2.5-0.5b, repo: Qwen/Qwen2.5-0.5B-Instruct-GGUF, pattern: q4_k_m }
+          - { name: qwen2.5-1.5b, repo: Qwen/Qwen2.5-1.5B-Instruct-GGUF, pattern: q4_k_m }
+          - { name: qwen2.5-3b,   repo: Qwen/Qwen2.5-3B-Instruct-GGUF,   pattern: q4_k_m }
+          - { name: qwen2.5-7b,   repo: Qwen/Qwen2.5-7B-Instruct-GGUF,   pattern: q4_k_m }
+          - { name: qwen2.5-14b,  repo: Qwen/Qwen2.5-14B-Instruct-GGUF,  pattern: q4_k_m }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Instalar
+        run: |
+          pip install huggingface_hub
+          pip install llama-cpp-python --prefer-binary --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+      - name: Generar
+        env: { N_SAMPLES: "3" }
+        run: python run_llm.py "${{ matrix.repo }}" "${{ matrix.pattern }}" "out/${{ matrix.name }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "${{ matrix.name }}", path: "out/${{ matrix.name }}" }
+
+  collect:
+    needs: generate
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: results }
+      - name: Guardar resultados en el repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add results
+          git commit -m "Respuestas de los modelos (run ${{ github.run_id }})" || echo "nada que guardar"
+          git push
