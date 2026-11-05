@@ -1,0 +1,6 @@
+{
+ "/home/claude/t2w-llm-sweep/results/qwen2.5-7b/sample_3.txt": {
+  "runs": false,
+  "error": "RuntimeError: weight should contain 64 elements not 1"
+ }
+}

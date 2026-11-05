@@ -1,0 +1,15 @@
+qwen2.5-0.5b/sample_1 {'runs': False, 'error': "NameError: name 'rpm' is not defined"}
+qwen2.5-0.5b/sample_2 {'runs': False, 'error': 'IndexError: tuple index out of range'}
+qwen2.5-0.5b/sample_3 {'runs': False, 'error': "AttributeError: 'float' object has no attribute 'shape'"}
+qwen2.5-1.5b/sample_1 {'runs': False, 'error': "SyntaxError: '[' was never closed (<string>, line 42)"}
+qwen2.5-1.5b/sample_2 {'runs': False, 'error': 'proceso abortado (memoria o tiempo)'}
+qwen2.5-1.5b/sample_3 {'runs': False, 'error': 'RuntimeError: addmm: mat1 and mat2 shapes cannot be multiplied (280x192000 and 38400x100)'}
+qwen2.5-14b/sample_1 {'runs': False, 'error': "TypeError: argument of type 'NoneType' is not iterable"}
+qwen2.5-14b/sample_2 {'runs': False, 'error': "NameError: name 'F' is not defined"}
+qwen2.5-14b/sample_3 {'runs': False, 'error': 'RuntimeError: addmm: mat1 and mat2 shapes cannot be multiplied (280x95968 and 4x12000)'}
+qwen2.5-3b/sample_1 {'runs': False, 'error': 'RuntimeError: addmm: mat1 and mat2 shapes cannot be multiplied (280x768064 and 640x4)'}
+qwen2.5-3b/sample_2 {'runs': False, 'error': 'ValueError: cannot reshape array of size 576000000 into shape (1,1,24000)'}
+qwen2.5-3b/sample_3 {'runs': False, 'error': 'AssertionError: forma de salida (14000, 4)'}
+qwen2.5-7b/sample_1 {'runs': False, 'error': "SyntaxError: '[' was never closed (<string>, line 50)"}
+qwen2.5-7b/sample_2 {'runs': False, 'error': 'RuntimeError: Input type (torch.FloatTensor) and weight type (torch.DoubleTensor) should be the same or input should be a MKLDNN tensor and weight is a dense tensor'}
+qwen2.5-7b/sample_3 {'runs': False, 'error': 'RuntimeError: weight should contain 64 elements not 1'}
