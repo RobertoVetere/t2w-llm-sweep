@@ -1,0 +1,31 @@
+```python
+import torch
+import numpy as np
+
+# Define the model
+class BuildModel:
+    def __init__(self, input_shape, output_shape):
+        self.input_shape = input_shape
+        self.output_shape = output_shape
+        self.weight = torch.randn(self.output_shape[0], self.output_shape[1])
+
+    def build_model(self, rpm: float) -> torch.nn.Module:
+        self.weight = torch.randn(self.output_shape[0], self.output_shape[1])  # Initialize the weight matrix
+        self.weight[0].data = 0.5  # Set the weight of the first element to 0.5
+        self.weight[1].data = np.array([0.1, 0.2])  # Set the weight of the second element to np.array([0.1, 0.2])
+        self.weight[2].data = 0.3  # Set the weight of the third element to 0.3
+        self.weight[3].data = 0.4  # Set the weight of the fourth element to 0.4
+        self.weight[4].data = 0.2  # Set the weight of the fifth element to 0.2
+
+        return self.weight
+
+# Example usage
+model = BuildModel((1, 24000), (4,))
+
+# Build the model with the given parameters
+rpm = 700.0  # Shaft speed in rpm
+model.build_model(rpm)
+
+# Output the weights
+print(model.weight)
+```

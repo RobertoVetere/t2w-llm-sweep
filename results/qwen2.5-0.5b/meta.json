@@ -1,0 +1,24 @@
+{
+ "repo": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+ "revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+ "files": [
+  {
+   "file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+   "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+   "official_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+   "match": true
+  }
+ ],
+ "sample_1": {
+  "seconds": 14.9,
+  "tokens": 595
+ },
+ "sample_2": {
+  "seconds": 6.6,
+  "tokens": 324
+ },
+ "sample_3": {
+  "seconds": 7.4,
+  "tokens": 358
+ }
+}

@@ -1,0 +1,70 @@
+```python
+import torch
+import numpy as np
+from torch import nn
+
+def build_model(rpm: float) -> torch.nn.Module:
+    class CustomModel(nn.Module):
+        def __init__(self):
+            super(CustomModel, self).__init__()
+            
+            # Preparing for the rolling-element bearing signal
+            self.sample_rate = 48000
+            self.signal_duration = 0.5
+            self.signal_length = self.sample_rate * self.signal_duration
+            self.batch_size = 1  # For now, this will be handled in the forward pass
+            
+            self.rpm = rpm
+            self.N = 9  # Number of balls
+            self.db = 0.3126 / 25.4  # Ball diameter in mm
+            self.dp = 1.537 / 25.4  # Pitch diameter in mm
+            self.angle = 0  # Contact angle in degrees
+            self.shaft_speed = self.signal_length / (2 * np.pi * self.dp * self.N * self.rpm / 60)
+            self.freq = self.shaft_speed / 2
+            self.freqs = np.array([self.freq / 2, 1, 2, 4])  # Frequencies to consider
+            
+            # Preparing weights and biases manually
+            self.weights = np.zeros((1, 1, 24000), dtype=np.float32)
+            self.weights[0, 0, 3000:21000] = 1  # First peak at 3 kHz
+            
+            self.bias = np.zeros((1, 4), dtype=np.float32)
+            
+            # Building the model
+            self.conv1d = nn.Conv1d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=1)
+            self.conv1d.weight.data.copy_(torch.from_numpy(np.outer(self.weights, self.weights).reshape(1, 1, 24000)))
+            self.conv1d.bias.data.copy_(torch.from_numpy(self.bias))
+            
+            self.fc1 = nn.Linear(16, 16)
+            self.fc1.weight.data.copy_(torch.from_numpy(np.array([[0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [0.9, 1.0, 1.1, 1.2], [1.3, 1.4, 1.5, 1.6]])))
+            self.fc1.bias.data.copy_(torch.from_numpy(np.array([0.1, 0.2, 0.3, 0.4])))
+            
+            self.fc2 = nn.Linear(16, 4)
+            self.fc2.weight.data.copy_(torch.from_numpy(np.array([[0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [0.9, 1.0, 1.1, 1.2], [1.3, 1.4, 1.5, 1.6]])))
+            self.fc2.bias.data.copy_(torch.from_numpy(np.array([0.1, 0.2, 0.3, 0.4])))
+            
+            self.relu = nn.ReLU()
+            
+            self.pool = nn.MaxPool1d(kernel_size=2, stride=2)
+            
+            self.norm = nn.BatchNorm1d(16)
+            
+            self.dropout = nn.Dropout(p=0.5)
+            
+        def forward(self, x):
+            x = self.conv1d(x)
+            x = self.relu(x)
+            x = self.pool(x)
+            x = self.norm(x)
+            x = self.dropout(x)
+            
+            x = self.fc1(x)
+            x = self.relu(x)
+            
+            x = self.fc2(x)
+            return x
+
+    return CustomModel()
+
+# Example usage
+model = build_model(1500)
+```

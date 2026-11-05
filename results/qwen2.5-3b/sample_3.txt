@@ -1,0 +1,40 @@
+```python
+import torch
+import numpy as np
+from torch import nn
+from torch.nn import functional as F
+
+def build_model(rpm: float) -> torch.nn.Module:
+    class RollingElementBearingDiagnosis(nn.Module):
+        def __init__(self, rpm: float):
+            super(RollingElementBearingDiagnosis, self).__init__()
+            self.rpm = rpm
+            self.batch_norm = nn.BatchNorm1d(1)
+            self.conv1 = nn.Conv1d(1, 16, kernel_size=3, stride=1, padding=1)
+            self.conv2 = nn.Conv1d(16, 32, kernel_size=3, stride=1, padding=1)
+            self.pool = nn.AvgPool1d(kernel_size=2)
+            self.fc1 = nn.Linear(32 * 120, 128)
+            self.fc2 = nn.Linear(128, 64)
+            self.fc3 = nn.Linear(64, 4)
+            self.dropout = nn.Dropout(0.5)
+
+        def forward(self, x):
+            x = x.float()
+            x = self.batch_norm(x)
+            x = self.pool(F.relu(self.conv1(x)))
+            x = self.pool(F.relu(self.conv2(x)))
+            x = x.view(-1, 32 * 120)
+            x = F.relu(self.fc1(x))
+            x = self.dropout(x)
+            x = F.relu(self.fc2(x))
+            x = self.dropout(x)
+            x = self.fc3(x)
+            return x
+
+    model = RollingElementBearingDiagnosis(rpm)
+    return model
+
+# Example usage:
+# model = build_model(rpm)
+# logits = model(tensor_of_shape_input)
+```

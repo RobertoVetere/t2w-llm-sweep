@@ -1,0 +1,37 @@
+```python
+import torch
+import numpy as np
+from torch import nn, Tensor
+
+def build_model(rpm: float) -> torch.nn.Module:
+    # Define the model architecture
+    model = nn.Sequential(
+        nn.Conv1d(1, 16, kernel_size=3, padding=1),  # Input layer with 1 input channel
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(16, 32, kernel_size=3, padding=1),  # Second convolution layer with 32 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(32, 64, kernel_size=3, padding=1),  # Third convolution layer with 64 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(64, 128, kernel_size=3, padding=1),  # Fourth convolution layer with 128 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(128, 256, kernel_size=3, padding=1),  # Fifth convolution layer with 256 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(256, 512, kernel_size=3, padding=1),  # Sixth convolution layer with 512 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(512, 1024, kernel_size=3, padding=1),  # Seventh convolution layer with 1024 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(1024, 1024, kernel_size=3, padding=1),  # Eighth convolution layer with 1024 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(1024, 256, kernel_size=3, padding=1),  # Ninth convolution layer with 256 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(256, 256, kernel_size=3, padding=1),  # Tenth convolution layer with 256 filters
+        nn.ReLU(),  # Non-linear activation
+        nn.Conv1d(256, 256, kernel_size=3, padding=1),  # Eleventh convolution layer with 256 filters
+        nn.Conv1d(256, 4, kernel_size=1),  # Output layer with 4 classes
+    )
+    return model
+
+# Example usage
+r = 13.5  # shaft speed in rpm
+model = build_model(rpm)
+```
