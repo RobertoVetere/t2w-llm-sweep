@@ -1,0 +1,68 @@
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+class HandcraftedBearingDiagnosis(nn.Module):
+    def __init__(self, rpm: float):
+        super(HandcraftedBearingDiagnosis, self).__init__()
+        
+        self.rpm = rpm
+        self.sample_rate = 48000
+        self.time_res = 1 / self.sample_rate
+        self.num_samples = 24000
+        
+        self.conv1 = nn.Conv1d(1, 16, kernel_size=16, stride=1, bias=False)
+        self.conv1.weight.data = torch.tensor(self.compute_conv1_weights(), requires_grad=False)
+        
+        self.conv2 = nn.Conv1d(16, 32, kernel_size=16, stride=1, bias=False)
+        self.conv2.weight.data = torch.tensor(self.compute_conv2_weights(), requires_grad=False)
+        
+        self.fc1 = nn.Linear(32 * (self.num_samples - 31), 128)
+        self.fc1.weight.data = torch.tensor(self.compute_fc1_weights(), requires_grad=False)
+        self.fc1.bias.data = torch.tensor(self.compute_fc1_bias(), requires_grad=False)
+        
+        self.fc2 = nn.Linear(128, 4)
+        self.fc2.weight.data = torch.tensor(self.compute_fc2_weights(), requires_grad=False)
+        self.fc2.bias.data = torch.tensor(self.compute_fc2_bias(), requires_grad=False)
+        
+    def compute_conv1_weights(self):
+        # Example weights for the first convolutional layer
+        # These are hand-picked based on knowledge of the physics
+        return np.random.rand(16, 1, 16) * 0.1 - 0.05
+    
+    def compute_conv2_weights(self):
+        # Example weights for the second convolutional layer
+        return np.random.rand(32, 16, 16) * 0.1 - 0.05
+    
+    def compute_fc1_weights(self):
+        # Example weights for the first fully connected layer
+        return np.random.rand(128, 32 * (self.num_samples - 31)) * 0.1 - 0.05
+    
+    def compute_fc1_bias(self):
+        # Example bias for the first fully connected layer
+        return np.zeros(128)
+    
+    def compute_fc2_weights(self):
+        # Example weights for the second fully connected layer
+        return np.random.rand(4, 128) * 0.1 - 0.05
+    
+    def compute_fc2_bias(self):
+        # Example bias for the second fully connected layer
+        return np.zeros(4)
+    
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.max_pool1d(x, kernel_size=2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool1d(x, kernel_size=2)
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+def build_model(rpm: float) -> torch.nn.Module:
+    return HandcraftedBearingDiagnosis(rpm)
+```
+```

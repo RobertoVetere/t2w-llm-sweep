@@ -1,0 +1,68 @@
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+class CustomBearingClassifier(nn.Module):
+    def __init__(self, rpm: float):
+        super(CustomBearingClassifier, self).__init__()
+        
+        self.rpm = rpm
+        self.ball_diameter = 0.3126  # in inches
+        self.pitch_diameter = 1.537  # in inches
+        self.contact_angle = 0.0  # in degrees
+        
+        # Calculate the frequency of the ball passing (BPF) and the related frequencies
+        self.bpf = (self.rpm * self.ball_diameter / (self.pitch_diameter * np.pi)) / 2
+        self.bpf_freq = self.bpf * 48000 / 60  # convert to Hz and scale to sample rate
+        
+        # Define the model architecture
+        self.conv1 = nn.Conv1d(1, 16, kernel_size=16, stride=1, padding=8)
+        self.conv2 = nn.Conv1d(16, 32, kernel_size=16, stride=1, padding=8)
+        self.pool = nn.MaxPool1d(kernel_size=8, stride=4, padding=2)
+        self.fc1 = nn.Linear(32 * (24000 // 32), 64)
+        self.fc2 = nn.Linear(64, 4)
+        
+        # Set the weights manually
+        with torch.no_grad():
+            # Initialize the first convolutional layer
+            self.conv1.weight.copy_(torch.tensor([
+                [1, 0, -1, 0],
+                [0, 1, 0, -1],
+                [0, -1, 0, 1],
+                [1, 1, 1, 1]
+            ])[None, None, :, :] / 4)
+            self.conv1.bias.zero_()
+            
+            # Initialize the second convolutional layer
+            self.conv2.weight.copy_(torch.tensor([
+                [1, 1, 1, 1, 0, 0, -1, -1, -1, -1],
+                [1, 1, -1, -1, 0, 0, 1, 1, -1, -1],
+                [1, -1, 1, -1, 0, 0, -1, 1, 1, -1],
+                [1, -1, -1, 1, 0, 0, 1, -1, 1, -1],
+                [1, 0, 0, 0, 1, -1, 0, 0, 0, -1],
+                [1, 0, 0, 0, -1, 1, 0, 0, 0, 1]
+            ])[None, None, :, :] / 6)
+            self.conv2.bias.zero_()
+            
+            # Initialize the fully connected layer
+            self.fc1.weight.copy_(torch.tensor([
+                [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                 0.

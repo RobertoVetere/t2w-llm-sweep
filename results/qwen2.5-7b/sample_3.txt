@@ -1,0 +1,68 @@
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+def build_model(rpm: float) -> nn.Module:
+    class BearingDiagnosis(nn.Module):
+        def __init__(self, rpm: float):
+            super(BearingDiagnosis, self).__init__()
+            self.rpm = rpm
+            self.conv1 = nn.Conv1d(in_channels=1, out_channels=64, kernel_size=128, bias=False)
+            self.bn1 = nn.BatchNorm1d(num_features=64)
+            self.pool1 = nn.MaxPool1d(kernel_size=2)
+            self.linear1 = nn.Linear(in_features=64*96, out_features=256, bias=False)
+            self.bn2 = nn.BatchNorm1d(num_features=256)
+            self.linear2 = nn.Linear(in_features=256, out_features=4, bias=False)
+
+            # Setting weights
+            self._set_conv1_weight()
+            self._set_bn1_weight_bias()
+            self._set_linear1_weight()
+            self._set_bn2_weight_bias()
+            self._set_linear2_weight()
+
+        def _set_conv1_weight(self):
+            kernel = np.random.randn(64, 1, 128)  # Random initialization for illustration
+            kernel[:, :, :64] = 1 / np.sqrt(64 * 128)  # Manual setting for the first half
+            kernel[:, :, 64:] = -1 / np.sqrt(64 * 128)  # Manual setting for the second half
+            self.conv1.weight.data = torch.tensor(kernel, dtype=torch.float32)
+
+        def _set_bn1_weight_bias(self):
+            self.bn1.weight.data = torch.tensor([1.0], dtype=torch.float32)
+            self.bn1.bias.data = torch.tensor([0.0], dtype=torch.float32)
+
+        def _set_linear1_weight(self):
+            weight = np.random.randn(256, 64 * 96)  # Random initialization for illustration
+            weight[:, :64 * 48] = 1 / np.sqrt(256)  # Manual setting for the first half
+            weight[:, 64 * 48:] = -1 / np.sqrt(256)  # Manual setting for the second half
+            self.linear1.weight.data = torch.tensor(weight, dtype=torch.float32)
+
+        def _set_bn2_weight_bias(self):
+            self.bn2.weight.data = torch.tensor([1.0], dtype=torch.float32)
+            self.bn2.bias.data = torch.tensor([0.0], dtype=torch.float32)
+
+        def _set_linear2_weight(self):
+            weight = np.random.randn(4, 256)  # Random initialization for illustration
+            weight[:, :256 // 4] = 1 / np.sqrt(4)  # Manual setting for the first quarter
+            weight[:, 256 // 4:2 * 256 // 4] = -1 / np.sqrt(4)  # Manual setting for the second quarter
+            weight[:, 2 * 256 // 4:3 * 256 // 4] = 1 / np.sqrt(4)  # Manual setting for the third quarter
+            weight[:, 3 * 256 // 4:] = -1 / np.sqrt(4)  # Manual setting for the fourth quarter
+            self.linear2.weight.data = torch.tensor(weight, dtype=torch.float32)
+
+        def forward(self, x):
+            x = self.conv1(x)
+            x = self.bn1(x)
+            x = F.relu(x)
+            x = self.pool1(x)
+            x = x.view(x.size(0), -1)
+            x = self.linear1(x)
+            x = self.bn2(x)
+            x = F.relu(x)
+            x = self.linear2(x)
+            return x
+
+    return BearingDiagnosis(rpm)
+```
+```

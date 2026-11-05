@@ -1,0 +1,36 @@
+{
+ "repo": "Qwen/Qwen2.5-14B-Instruct-GGUF",
+ "revision": "b466e1f8c07172155743e8e1307507d8a4f91fbd",
+ "files": [
+  {
+   "file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf",
+   "sha256": "a09ea5e7b1eafb1b30b241726c3cc3c905c96f14ad41e246ffa5f44e53904f68",
+   "official_sha256": "a09ea5e7b1eafb1b30b241726c3cc3c905c96f14ad41e246ffa5f44e53904f68",
+   "match": true
+  },
+  {
+   "file": "qwen2.5-14b-instruct-q4_k_m-00002-of-00003.gguf",
+   "sha256": "21b9457d079680d284e90ef69607c4b2d8ef64a09d4729cb7b5e1357bdba41ae",
+   "official_sha256": "21b9457d079680d284e90ef69607c4b2d8ef64a09d4729cb7b5e1357bdba41ae",
+   "match": true
+  },
+  {
+   "file": "qwen2.5-14b-instruct-q4_k_m-00003-of-00003.gguf",
+   "sha256": "c8d37006760a387a35216e070e6664d7da927f10be8eb870fef2e3d4833d9976",
+   "official_sha256": "c8d37006760a387a35216e070e6664d7da927f10be8eb870fef2e3d4833d9976",
+   "match": true
+  }
+ ],
+ "sample_1": {
+  "seconds": 282.9,
+  "tokens": 625
+ },
+ "sample_2": {
+  "seconds": 196.1,
+  "tokens": 512
+ },
+ "sample_3": {
+  "seconds": 179.9,
+  "tokens": 469
+ }
+}
