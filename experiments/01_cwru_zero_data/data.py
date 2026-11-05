@@ -2,7 +2,8 @@ import glob, os, re
 import numpy as np
 from handnet import WIN
 
-ROOT = "/home/claude/data/CWRU_Bearing_NumPy/Data"
+DATA = os.environ.get("T2W_DATA", os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+ROOT = os.path.join(DATA, "CWRU_Bearing_NumPy", "Data")
 CLASSES = ["Normal", "IR", "B", "OR"]
 
 

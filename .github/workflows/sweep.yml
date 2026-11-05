@@ -38,10 +38,11 @@ jobs:
       - name: Generar
         if: env.SKIP != '1'
         env: { N_SAMPLES: "3" }
+        working-directory: experiments/03_llm_size_sweep
         run: python run_llm.py "${{ matrix.repo }}" "${{ matrix.pattern }}" "out/${{ matrix.name }}"
       - uses: actions/upload-artifact@v4
         if: always() && env.SKIP != '1'
-        with: { name: "${{ matrix.name }}", path: "out/${{ matrix.name }}" }
+        with: { name: "${{ matrix.name }}", path: "experiments/03_llm_size_sweep/out/${{ matrix.name }}" }
 
   collect:
     needs: generate
@@ -50,11 +51,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
-        with: { path: results }
+        with: { path: experiments/03_llm_size_sweep/results }
       - name: Guardar resultados en el repo
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add results
+          git add experiments/03_llm_size_sweep/results
           git commit -m "Respuestas de los modelos (run ${{ github.run_id }})" || echo "nada que guardar"
           git push

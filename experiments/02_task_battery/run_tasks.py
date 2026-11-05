@@ -9,8 +9,9 @@ from har_net import HARNet
 from fsdd_net import FSDDNet
 
 torch.set_num_threads(2)
-HAR = "/home/claude/data/HumanActivityRecognition"
-FSDD = "/home/claude/data/free-spoken-digit-dataset/recordings"
+DATA = os.environ.get("T2W_DATA", os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+HAR = os.path.join(DATA, "HumanActivityRecognition")
+FSDD = os.path.join(DATA, "free-spoken-digit-dataset", "recordings")
 
 
 def bal_acc(y, p):

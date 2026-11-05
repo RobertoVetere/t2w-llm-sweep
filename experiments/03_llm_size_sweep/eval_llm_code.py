@@ -4,7 +4,8 @@ Uso: python3 eval_llm_code.py respuesta_modelo.py [más archivos...]
 Cada archivo debe definir build_model(rpm). Si no se puede ejecutar, cuenta como fallo.
 """
 import json, re, sys, traceback, numpy as np, torch
-sys.path.insert(0, "/home/claude/t2w")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "01_cwru_zero_data"))
 from data import load_windows
 from evaluate import bal_acc
 
