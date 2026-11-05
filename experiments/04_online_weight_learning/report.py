@@ -5,7 +5,7 @@ Uso: python report.py NOMBRE_RED  (v1 | iter1 | iter2)
 import importlib, sys, numpy as np, torch, torch.nn as nn
 from common import (dataset, feedback_idx, HandNet, fault_orders, FGRID, BANDS, NPH, CLASSES, bal_acc, predict)
 
-ORD = np.arange(0.5, 20.0, 0.02)          # rejilla en órdenes del eje
+ORD = np.arange(0.2, 20.0, 0.02)          # rejilla en órdenes del eje
 
 
 def make(name):
