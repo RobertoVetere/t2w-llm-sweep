@@ -1,7 +1,7 @@
 """Evaluación final única: v1, iter1, iter2 y métodos por gradiente con el mismo feedback."""
 import json, os, sys, numpy as np, torch, torch.nn as nn
 from common import dataset, feedback_idx, test_idx, metrics, bal_acc, HandNet, CLASSES, HERE
-import edits.iter1 as it1, edits.iter2 as it2
+import edits.iter1 as it1, edits.iter2 as it2, edits.iter3 as it3
 sys.path.insert(0, os.path.join(HERE, "..", "01_cwru_zero_data"))
 from ft_experiment import spectra, Head            # noqa: E402
 from baseline_cnn import model as cnn_model        # noqa: E402
