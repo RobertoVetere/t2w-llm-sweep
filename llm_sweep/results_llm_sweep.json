@@ -1,0 +1,17 @@
+{
+ "/tmp/t_mine.txt": {
+  "runs": true,
+  "balanced_acc": 0.5852519299111804,
+  "healthy_vs_fault": 0.8078677309007982,
+  "pred_hist": [
+   407,
+   96,
+   1,
+   443
+  ]
+ },
+ "/tmp/t_broken.txt": {
+  "runs": false,
+  "error": "RuntimeError: addmm: mat1 and mat2 shapes cannot be multiplied (280x24000 and 10x4)"
+ }
+}
