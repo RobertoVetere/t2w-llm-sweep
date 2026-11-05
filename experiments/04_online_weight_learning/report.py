@@ -75,6 +75,20 @@ def main(name):
             w = np.abs(ORD - v) <= max(0.03, 0.01 * v)
             cons.append(f"{nm} {np.mean(zo[:, :, w].max(2).max(1) > 3):.0%}")
         out.append("Ventanas con pico z>3 en alguna banda: " + ", ".join(cons))
+    # detalle por ventana (añadido tras la iteración 1): logits de la red y z en las líneas clave
+    out.append("\n## Detalle por ventana (feedback)\n")
+    out.append("| real | predicho | tamaño | rpm | logits N/IR/B/OR | G1 (máx z 1–3 kHz) | z máx-banda en " + " / ".join(marks) + " |\n|---|---|---|---|---|---|---|")
+    with torch.no_grad():
+        for i, j in enumerate(idx):
+            net = mk(int(rpm[j]))
+            lg = net(torch.tensor(X[j][None, None]))[0].numpy()
+            fr = rpm[j] / 60.0
+            zz = []
+            for v in marks.values():
+                w = np.abs(FGRID - v * fr) <= 0.01 * v * fr + 1.0
+                zz.append(f"{Z[i][:, w].max():.1f}")
+            out.append(f"| {CLASSES[t[i]]} | {CLASSES[p[i]]} | {size[j]} | {rpm[j]} | " + " / ".join(f"{v:.1f}" for v in lg) +
+                       f" | {Z[i, 0].max():.1f} | " + " / ".join(zz) + " |")
     out.append("\n*Columna reservada; no se calcula en esta versión.")
     txt = "\n".join(out)
     open(f"reports/report_{name}.md", "w").write(txt)
