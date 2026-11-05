@@ -9,7 +9,8 @@ N = int(os.environ.get("N_SAMPLES", "3"))
 os.makedirs(outdir, exist_ok=True)
 
 info = HfApi().model_info(repo, files_metadata=True)
-files = sorted(s for s in info.siblings if s.rfilename.endswith(".gguf") and pattern in s.rfilename.lower())
+files = sorted((s for s in info.siblings if s.rfilename.endswith(".gguf") and pattern in s.rfilename.lower()),
+               key=lambda s: s.rfilename)
 assert files, f"no hay archivos con {pattern}"
 meta = {"repo": repo, "revision": info.sha, "files": []}
 paths = []
