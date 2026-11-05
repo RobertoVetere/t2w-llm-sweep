@@ -11,7 +11,10 @@ from evaluate import bal_acc
 
 def extract(text):
     m = re.findall(r"```(?:python)?\n(.*?)```", text, re.S)
-    return m[0] if m else text
+    if m:
+        return m[0]
+    m = re.search(r"```(?:python)?\n(.*)", text, re.S)   # bloque sin cerrar (respuesta cortada)
+    return m.group(1) if m else text
 
 
 if __name__ == "__main__":
